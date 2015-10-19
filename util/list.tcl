@@ -1,0 +1,99 @@
+# list utilities
+proc lhas? {list elem} { expr {[lsearch $list $elem] > -1} }
+proc lhas_all? {list args} { 
+    foreach a $args {
+	if {![lhas? $list $a]} { return 0 }
+    }
+    return 1
+}
+proc ldiff {l1 l2} { ; # only report distinct elements, ignore duplicates
+    foreach l $l1 {
+	set t1($l) 1
+    }
+    foreach l $l2 {
+	set t2($l) 1
+    }
+    set only_in_l1 ""
+    foreach n [array names t1] {
+	if {![info exists t2($n)]} {
+	    lappend only_in_l1 $n
+	}
+    }
+    set only_in_l2 ""
+    foreach n [array names t2] {
+	if {![info exists t1($n)]} {
+	    lappend only_in_l2 $n
+	}
+    }
+    set out ""
+    if {[llength $only_in_l1] > 0} {
+	lappend out "Only in first:" [lsort -dict $only_in_l1]
+    } 
+    if {[llength $only_in_l2] > 0} {
+	lappend out "Only in second:" [lsort -dict $only_in_l2]
+    }
+    set out
+}
+proc unit_test {} {
+    set list "a b c {d e}"
+    foreach e $list {
+	assert 1 [lhas? $list $e] "<lhas?> $e"
+    }
+    foreach e "x y z d e" {
+	assert 0 [lhas? $list $e] "<lhas?> $e"
+    }
+    assert 1 [lhas_all? $list a b {d e}]   "<lhas_all?> 1"
+    assert 0 [lhas_all? $list a b {d e} x] "<lhas_all?> 2"
+    assert 0 [lhas_all? $list a b c x {d e}] "<lhas_all?> 2"
+    assert "" [ldiff "a b" "a b a b"] "<ldiff> 1"
+    set out [ldiff "x y common" "a b common"]
+    assert "Only in first:"  [lindex $out 0] "<ldiff 2a>"
+    assert "x y"             [lindex $out 1] "<ldiff> 2"
+    assert "Only in second:" [lindex $out 2] "<ldiff 3a>"
+    assert "a b"             [lindex $out 3] "<ldiff> 3"
+}
+unit_test
+
+# 
+proc max {list} { compare $list > max }
+proc min {list} { compare $list < min }
+proc compare {list op tag} {
+    if {[set bound [llength $list]] < 1} { error "<$tag> Empty list" }
+    set select [lindex $list 0]
+    for {set i 1} {$i < $bound} {incr i} {
+	if [list [set val [lindex $list $i]] $op $select] {
+	    set select $val
+	}
+    }
+    set select
+}
+
+# prob 20
+proc sum {list} {
+    set sum 0
+    foreach d $list { incr sum $d }
+    set sum
+}
+
+proc permute {list} {
+    if {[llength $list] == 1} {
+	return [lindex $list 0]
+    }
+    set perms {}
+    foreach elem $list { set table($elem) "" } ; # init table
+    foreach elem [array names table] {
+	set reminder "" ; # find list of all but this elem
+	foreach e2 [array names table] {
+	    if {$e2 != $elem} { lappend reminder $e2 }
+	}
+	foreach sub [permute $reminder] {
+	    lappend perms [concat $elem $sub]
+	}
+    }
+    set perms
+}
+assert "x" [permute "x"] "<permute> 0"
+assert {{0 1} {1 0}} [permute "0 1"] "<permute> 1"
+assert [lindex [permute [range 3]] 3] "1 2 0" "<permute> 2"
+assert "{a b c} {a c b} {b a c} {b c a} {c a b} {c b a}" [permute "a b c"] "<permute> 3"
+
