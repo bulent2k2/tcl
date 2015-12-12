@@ -1,0 +1,11 @@
+Always start coding in ./now.tcl, by adding:
+  define <newname>
+
+In tkcon, just do:
+  source now.tcl
+
+This will source the new file ./<newname>.tcl
+
+define is very useful -- defined in util/useme.tcl,
+but, no need to look into that at first..
+

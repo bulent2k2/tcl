@@ -46,13 +46,28 @@ proc ::use::update_globals {path} {
     if {[set count [llength $new]] > 0} {
 	puts "$path defined $count new namespace[plural? $count]: <[set nss [lsort -dict $new]]>"
 	foreach ns $nss {
+	    set c2 [llength [set cmds [get_commands $ns]]]
+	    puts "[llength $cmds] command[plural? $c2] in $ns: <$cmds>"
 	    if {[llength [set sub [namespace children $ns]]] > 0} {
 		puts "-- $ns has sub-namespace[plural? [llength $sub]]: < $sub >"
+		foreach ss $sub {
+		    set c2 [llength [set cmds [get_commands $ss]]]
+		    puts "-- [llength $cmds] command[plural? $c2] in $ss: <$cmds>"
+		}
+		# TODO: what if there are more nested namespaces??
 	    }
 	}
     }
     lappend out $count
     return $out
+}
+
+proc ::use::get_commands {nsn} {
+    # this works properly only if the NameSpaceName is given properly:
+    #   get_commands ::use
+    #   get_commands ::ckt::i
+    regsub -all "[set nsn]::" [lsort -dict [info commands [set nsn]::*]] "" out
+    set out
 }
 
 set ::use::tcl_vars2 [use::remember_globals]
