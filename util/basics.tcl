@@ -9,7 +9,7 @@ Doc utilities, foundational building blocks, etc.
 # Use as 'assert 1 [set x 1] "Cmd <set> is tested (:-)"
 proc assert {a b info} { if {$a != $b} { error "Failed: <$a> <$b> <$info>" } } ; # info should say what new cmd this assert call wants to test..
 
-# show the declaration of a proc 
+# show the declaration of a proc  (used to be called pp)
 proc s {procname {show_definition_too 0}} {
     set body [info body $procname]
     set args ""

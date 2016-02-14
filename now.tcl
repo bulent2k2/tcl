@@ -6,4 +6,6 @@ source util/useme.tcl
 #define le.tcl
 #define euler
 
-define ckt
+#define ckt
+
+define r ; # right triangle with integer edge lengths
