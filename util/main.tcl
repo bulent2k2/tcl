@@ -32,7 +32,7 @@ proc ::use::update_globals {path} {
 	}
     }
     if {[set count [llength $new]] > 0} {
-	puts "$path defined $count new commands: <[lsort -dict $new]>"
+	puts "[file tail $path] defined $count new commands: <[lsort -dict $new]>"
     }
     lappend out $count
 
@@ -74,8 +74,13 @@ set ::use::tcl_vars2 [use::remember_globals]
 set dir [file dirname [file normalize [info script]]]
 set count 0
 set count2 0
+
+######################
+# This is where we source the utility procs
+######################
+set kind_msg "Please keep the namespace tidy!"
 foreach file {
-    basics string range list array prime num assert
+    func basics defer list num
 } {
     lassign [define [file join $dir $file.tcl]] c1 c2
     incr count $c1
@@ -84,16 +89,18 @@ foreach file {
 if {$count == 0} {
     puts "Defined one new command. Name: < define >"
 } else {
-    puts "Defined $count new command[plural? $count]. Please clean up!"
+    puts "Defined $count new command[plural? $count]. $kind_msg"
 }
 if {$count == 0} {
     puts "Defined one new namespace. Name: < ::use >"
 }
 if {$count2 > 0} {
-    puts "Defined $count2 new namespace[plural? $count2]! Please clean up!"
+    puts "Defined $count2 new namespace[plural? $count2]! $kind_msg"
 }
-unset file count dir
+unset file count dir count2 c1 c2 kind_msg
+
 set ::use::tcl_vars3 [use::remember_globals]
+
 set new {}
 foreach var $::use::tcl_vars3 {
     if {-1 == [lsearch $::use::tcl_vars2 $var]} {
@@ -101,11 +108,9 @@ foreach var $::use::tcl_vars3 {
     }
 }
 if {[set diff [llength $new]] > 0} {
-    puts "There are $diff new vars! Please clean them up."
-    puts "They are: [lsort -dict $new]"
+    puts "There [is_or_are? $diff] $diff new var[plural? $diff]!"
+    puts "[it_or_they? $diff capital] [is_or_are? $diff]: [lsort -dict $new]"
 } else {
     puts "No new vars (:-)"
 }
 unset diff var new
-
-

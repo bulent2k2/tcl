@@ -1,4 +1,4 @@
-source util/main.tcl
+source util/useme.tcl
 
 # Also see: ~/BACKUP/usb-drives/toshiba/tcl/bb.tcl
 
@@ -6,7 +6,7 @@ source util/main.tcl
 #define tg
 #define sa
 #define ds
-#define le
+define le
 #define euler
 
 #define ckt

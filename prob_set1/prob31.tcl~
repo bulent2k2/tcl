@@ -19,7 +19,6 @@ Doc Coin sums {
 # Also note that we answer some questions many times, e.g., A{100 50} is used in A{200 50}, so, remembering our answers is very helpful
 
 # Here is the main challenge
-# Originally done (2015-06-25  prob31.tcl), see improvement (2016-06-09) in c:/Users/bbasaran/scala/recfun/src/main/scala/recfun/Main.scala
 proc how_many_ways {max_coin target} {
     if {$max_coin == 0} { return 0 }
     if {[memo?]} {
